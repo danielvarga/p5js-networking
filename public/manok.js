@@ -1,8 +1,13 @@
+let socket
+
+const ngrok = '21105165'
+
 const fejmeret = 100
 const szemmeret = 15
 const fulhossz = 50
 
-let manok = []
+let mano
+let manok = new Map()
 
 function verpaca(hely) {
   const num = 50
@@ -24,6 +29,25 @@ function verpaca(hely) {
   }
   endShape()
 }
+
+
+function serializeColor(c) {
+  const l = c.levels
+  return { 'r': l[0], 'g': l[1], 'b': l[2], 'a': l[3] }
+}
+
+function serializeVector(v) {
+  return { 'x': v.x, 'y': v.y }
+}
+
+function deserializeColor(c) {
+  return color(c.r, c.g, c.b, c.a)
+}
+
+function deserializeVector(v) {
+  return createVector(v.x, v.y)
+}
+
 
 
 class Mano {
@@ -104,7 +128,7 @@ class Mano {
   }
 
   rajzolas() {
-    this.golyoRajzolas()    
+    this.golyoRajzolas()
     this.testRajzolas()
   }
 
@@ -118,12 +142,71 @@ class Mano {
     this.golyoHely.x = this.hely.x + 100 * this.irany
     this.golyoHely.y = this.hely.y + 60
   }
+
+  // TODO can all this be avoided?
+  serialize() {
+    return {
+      szin: serializeColor(this.szin),
+      hely: serializeVector(this.hely),
+      irany: this.irany,
+      elozoHely: serializeVector(this.elozoHely),
+      golyoHely: serializeVector(this.golyoHely),
+      golyoIrany: this.golyoIrany,
+      pontszam: this.pontszam,
+      nev: this.nev
+    }
+  }
+
+  tobbieknek() {
+    socket.emit('event', this.serialize())
+  }
+}
+
+
+function deserializeMano(s) {
+  let m = new Mano()
+  m.szin = deserializeColor(s.szin)
+  m.hely = deserializeVector(s.hely)
+  m.irany = s.irany
+  m.elozoHely = deserializeVector(s.elozoHely)
+  m.golyoHely = deserializeVector(s.golyoHely)
+  m.golyoIrany = s.golyoIrany
+  m.pontszam = s.pontszam
+  m.nev = s.nev
+  return m
+}
+
+
+let cnv
+
+function centerCanvas() {
+  var x = (windowWidth - width) / 2;
+  var y = (windowHeight - height) / 2;
+  cnv.position(x, y);
+}
+
+function windowResized() {
+  centerCanvas();
 }
 
 
 function setup() {
-  createCanvas(768, 768);
-  manok = [new Mano(), new Mano()]
+  cnv = createCanvas(768, 768);
+  centerCanvas()
+
+  const port = '80'
+  socket = io.connect('http://' + ngrok + ".ngrok.io:" + port)
+
+  socket.on('event', data => {
+    // TODO crude proxy for room
+    if ('hely' in data) {
+      let tavmano = deserializeMano(data)
+      manok.set(tavmano.nev, tavmano)
+      tavmano.rajzolas()
+    }
+  })
+
+  mano = new Mano()
 }
 
 
@@ -138,31 +221,26 @@ function eltalaltaE(tettes, aldozat) {
 }
 
 function eltalaltEValakiValakit(manok) {
-  for (let tettes=0; tettes<manok.length; ++tettes) {
-    for (let aldozat=0; aldozat<manok.length; ++aldozat) {
-      eltalaltaE(manok[tettes], manok[aldozat])
+  for (const [tettesNev, tettes] of manok.entries()) {
+    for (const [aldozatNev, aldozat] of manok.entries()) {
+      eltalaltaE(tettes, aldozat)
     }
   }
 }
 
 function mousePressed() {
-  manok[0].loves()
-}
-
-
-function keyReleased() {
-  if (key == ' ') {
-    manok[1].loves()
-  }
+  mano.loves()
 }
 
 
 function eredmenyek(manok) {
   textSize(32)
-  const hezag = (width - 100) / manok.length
-  for (let i=0; i<manok.length; ++i) {
-    fill(manok[i].szin)
-    text(manok[i].pontszam, 50 + i * hezag, 30)
+  const hezag = (width - 100) / manok.size
+  let x = 50
+  for (const [nev, tavoliMano] of manok.entries()) {
+    fill(tavoliMano.szin)
+    text(tavoliMano.pontszam, x, 30)
+    x += hezag
   }
 }
 
@@ -170,17 +248,14 @@ function eredmenyek(manok) {
 function draw() {
   background(255)
 
-  emberMano = manok[0]
-  robotMano = manok[1]
+  mano.mozgatas(createVector(mouseX, mouseY))
 
-  emberMano.mozgatas(createVector(mouseX, mouseY))
+  mano.tobbieknek()
+  manok.set(mano.nev, mano)
 
-  let robotX = 3 * width / 4 + width / 4 * sin(frameCount / 50)
-  let robotY = height / 2 + height / 2 * sin(frameCount / 55)
-  robotMano.mozgatas(createVector(robotX, robotY))
-   
-  emberMano.rajzolas()
-  robotMano.rajzolas()
+  for (const [nev, tavoliMano] of manok.entries()) {
+    tavoliMano.rajzolas()
+  }
 
   eltalaltEValakiValakit(manok)
 
