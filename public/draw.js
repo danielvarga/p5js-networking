@@ -13,7 +13,7 @@ function setup() {
   socket = io.connect('http://' + ngrok + ".ngrok.io:" + port)
 
   socket.on('event', data => {
-    fill(255, mouseX / 3, mouseY / 3)
+    fill(255, data.x / 3, data.y / 3)
     ellipse(data.x, data.y, 30, 30)
   })
 }
