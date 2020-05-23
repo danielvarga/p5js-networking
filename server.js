@@ -20,7 +20,10 @@ const io = require('socket.io')(server)
 io.sockets.on('connection', (socket) => {
     console.log('Client connected: ' + socket.id)
 
-    socket.on('event', (data) => { socket.broadcast.emit('event', data); console.log('event', data) })
+    socket.on('event', (data) => {
+        socket.broadcast.emit('event', data);
+        // console.log('event', data)
+    })
 
     socket.on('disconnect', () => console.log('Client has disconnected'))
 })
