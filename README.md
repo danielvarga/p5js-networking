@@ -7,7 +7,8 @@ npm install
 
 node server
 
-open http://localhost
+open http://localhost # shooter
+open http://localhost/draw.html # paint
 ```
 
 # Let's expose it on the net
@@ -23,4 +24,4 @@ Register to https://ngrok.com/. Download ngrok client.
 open http://<<WHATEVER NGROK SAYS>>.ngrok.io
 ```
 
-Code taken from https://github.com/TannerGabriel/DrawingApp
+Networking code taken from https://github.com/TannerGabriel/DrawingApp
