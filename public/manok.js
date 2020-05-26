@@ -194,8 +194,7 @@ function setup() {
   cnv = createCanvas(768, 768);
   centerCanvas()
 
-  const port = '80'
-  socket = io.connect('http://' + ngrok + ".ngrok.io:" + port)
+  socket = io.connect('https://' + ngrok + ".ngrok.io")
 
   socket.on('event', data => {
     // TODO crude proxy for room

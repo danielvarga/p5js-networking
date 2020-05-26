@@ -10,7 +10,7 @@ let points = []
 
 function setup() {
   createCanvas(256 * 3, 256 * 3)
-  socket = io.connect('http://' + ngrok + ".ngrok.io:" + port)
+  socket = io.connect('https://' + ngrok + ".ngrok.io")
 
   socket.on('event', data => {
     fill(255, data.x / 3, data.y / 3)

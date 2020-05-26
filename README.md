@@ -7,8 +7,9 @@ npm install
 
 node server
 
-open http://localhost # shooter
+open http://localhost           # shooter
 open http://localhost/draw.html # paint
+open http://localhost/chat.html # sending webcam photos to each other
 ```
 
 # Let's expose it on the net
