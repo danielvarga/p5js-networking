@@ -7,7 +7,7 @@ let capture
 
 let pixels = new Array(bitmapSize * bitmapSize * 3).fill(0)
 
-
+let id
 
 let cnv
 
@@ -33,19 +33,25 @@ function setup() {
   noStroke()
   fill(0)
 
+  id = round(random(10000))
+
   socket = io.connect('https://' + ngrok + ".ngrok.io")
 
   socket.on('event', data => {
-    const img = render(data)
-    image(img, 250, 0, 200, 200)
+    const img = render(data.pixels)
+    image(img, data.x, data.y, 200, 200)
   })
 }
 
 function render(pixels) {
   let img = createImage(bitmapSize, bitmapSize)
   img.loadPixels()
-  for (let i = 0; i < img.width; i++) {
-    for (let j = 0; j < img.height; j++) {
+  for (let i = 0; i < bitmapSize; i++) {
+    for (let j = 0; j < bitmapSize; j++) {
+      if (dist(i, j, bitmapSize/2, bitmapSize/2) > bitmapSize/2) {
+        img.set(i, j, color(0, 0, 0, 0))
+        continue
+      }
       const pos = (j*bitmapSize + i) * 3
       const c = color(pixels[pos], pixels[pos + 1], pixels[pos + 2])
       img.set(i, j, c)
@@ -75,8 +81,8 @@ function draw() {
     }
   }
   const img = render(pixels)
-  image(img, 0, 0, 200, 200)
+  image(img, mouseX, mouseY, 200, 200)
   if (frameCount % 10 === 0) {
-    socket.emit('event', pixels)
+    socket.emit('event', {pixels: pixels, id: id, x: mouseX, y: mouseY})
   }
 }
