@@ -10,6 +10,7 @@ node server
 open http://localhost           # shooter
 open http://localhost/draw.html # paint
 open http://localhost/chat.html # sending webcam photos to each other
+open http://localhost/zoom.html # webcam streaming
 ```
 
 # Let's expose it on the net
