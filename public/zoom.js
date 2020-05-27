@@ -1,5 +1,9 @@
 
+deploy = 'heroku'
+
 const ngrok = '21105165'
+const heroku = 'vargaabel'
+
 
 const bitmapSize = 60
 
@@ -35,7 +39,12 @@ function setup() {
 
   id = round(random(10000))
 
-  socket = io.connect('https://' + ngrok + ".ngrok.io")
+  let url
+  if (deploy == 'heroku') {
+    url = 'https://' + heroku + '.herokuapp.com'
+  } else {
+    url = 'https://' + ngrok + '.ngrok.io'
+  socket = io.connect(url)
 
   socket.on('event', data => {
     const img = render(data.pixels)
