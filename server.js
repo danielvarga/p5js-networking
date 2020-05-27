@@ -18,7 +18,8 @@ var httpsServer = https.createServer(app)
 
 app.use(express.static('public'))
 
-const httpPort = '80'
+const httpPort = process.env.PORT || 80
+
 const httpsPort = '443'
 
 httpServer.on('listening', () => {
