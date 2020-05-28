@@ -5,7 +5,7 @@ const ngrok = '21105165'
 const heroku = 'vargaabel'
 
 
-const bitmapSize = 60
+const bitmapSize = 200
 
 let capture
 
@@ -92,7 +92,7 @@ function draw() {
   }
   const img = render(pixels)
   image(img, mouseX, mouseY, 200, 200)
-  if (frameCount % 10 === 0) {
+  if (frameCount % 3 === 0) {
     socket.emit('event', {pixels: pixels, id: id, x: mouseX, y: mouseY})
   }
 }
