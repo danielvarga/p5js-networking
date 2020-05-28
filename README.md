@@ -27,3 +27,16 @@ open http://<<WHATEVER NGROK SAYS>>.ngrok.io
 ```
 
 Networking code taken from https://github.com/TannerGabriel/DrawingApp
+
+# Heroku deployment
+
+Create project `vargaabel` at heroku.
+
+```
+heroku login
+heroku git:remote -a vargaabel
+git push heroku master
+heroku logs --tail
+heroku local web
+heroku open
+```

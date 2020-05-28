@@ -44,6 +44,7 @@ function setup() {
     url = 'https://' + heroku + '.herokuapp.com'
   } else {
     url = 'https://' + ngrok + '.ngrok.io'
+  }
   socket = io.connect(url)
 
   socket.on('event', data => {
