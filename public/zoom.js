@@ -5,7 +5,7 @@ const ngrok = '21105165'
 const heroku = 'vargaabel'
 
 
-const bitmapSize = 100
+const bitmapSize = 60
 
 let capture
 
